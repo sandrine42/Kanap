@@ -1,19 +1,16 @@
-//? produit = id canapé
+////////Affichage d'un produit de façon dynamique à l'aide de son ID////////
+
+//Récupération de l'id via les paramètres de l'url
 const queryString = window.location.href;
 const urlParams = new URL(queryString);
 const idProduct = urlParams.searchParams.get("id");
 const urlProduct = `http://localhost:3000/api/products/${idProduct}`;
 
-(async function () {
-    const articleId = getArticleId()
-    const articleItem = await getArticleItem(articleId)
-    displayArticle(articleItem)
-  })()
+ function getArticleId() {
+  return new URL(location.href).searchParams.get('id')
+}
   
-  function getArticleId() {
-    return new URL(location.href).searchParams.get('id')
-  }
-  
+  // Récupération des articles de l'API
   function getArticleItem() {
     return fetch(urlProduct)
       .then(function(Response) {
@@ -27,6 +24,7 @@ const urlProduct = `http://localhost:3000/api/products/${idProduct}`;
       })
   }
   
+  // Création d'une fiche produit (présent dans l'API), dans le DOM
     function displayArticle(article) {
      // Image du produit
      let productImg = document.createElement("img");
@@ -62,9 +60,14 @@ const urlProduct = `http://localhost:3000/api/products/${idProduct}`;
     addToCart(article);
 }
 
+  // Répartition des données de l'API dans le DOM
+  (async function () {
+    const articleId = getArticleId()
+    const articleItem = await getArticleItem(articleId)
+    displayArticle(articleItem)
+  })()
+  
 //Ajout des articles via le local storage dans le panier
-
-//Fonction pour ajouter les articles au panier au clic sur le bouton
 const addToCart = (article) => {
 const btnAddToCart = document.querySelector("#addToCart");
 btnAddToCart.addEventListener("click", (e) => {
@@ -88,11 +91,11 @@ let colorChoice =  color.value;
 let quantityChoice = quantity.value;
 /*console.log(quantityChoice)*/
 
-//Options des produits : Id, Couleur et quantité
+//Options des produits : Id, Couleur et quantité...
 let productItems =  {
   itemId: `${idProduct}`,
   itemColorSelect: `${colorChoice}`,
-  itemQuantity: `${Number(quantityChoice)}`,
+  itemQtty: `${Number(quantityChoice)}`,
   itemImgSrc: `${article.imageUrl}`,
   itemImgAlt: `${article.altTxt}`,
   itemTitle: `${article.name}`,
@@ -124,7 +127,7 @@ if (productStorage [i].itemId == idProduct &&
   productStorage [i].itemColorSelect == color.value){ 
   return  (
     console.log("ok condition 2"),
-productStorage[i].itemQuantity++,
+productStorage[i].itemQtty++,
 localStorage.setItem("article", JSON.stringify(productStorage)),
 productStorage = JSON.parse(localStorage.getItem("article"))),
 alert("Ce produit est déja dans votre panier, la quantité a été ajoutée")
