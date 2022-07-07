@@ -103,7 +103,7 @@ let productItems =  {
   itemDescription: `${article.description}`
 
 };
-/*console.log(productItems);*/
+console.log(productItems);
 
 //Ajout des article dans le panier au clic sur le bouton
 
@@ -123,17 +123,22 @@ console.log("ok condition 1")
 }else if (productStorage != null){
 for(i = 0 ; i < productStorage.length ; i++){
 
-if (productStorage [i].itemId == idProduct &&
-  productStorage [i].itemColorSelect == color.value){ 
-  return  (
-    console.log("ok condition 2"),
-productStorage[i].itemQtty++,
-localStorage.setItem("article", JSON.stringify(productStorage)),
-productStorage = JSON.parse(localStorage.getItem("article"))),
-alert("Ce produit est déja dans votre panier, la quantité a été ajoutée")
-};
-}
+  if (productStorage) {
+    const newTotalQtty = productStorage.find(
+        (el) => el.itemId === idProduct && el.itemColorSelect === color.value);
+        //Si le produit commandé est déjà dans le panier
+        if (newTotalQtty) {
+            let newQtty =
+            parseInt(productItems.itemQtty) + parseInt(newTotalQtty.itemQtty);
+            newTotalQtty.itemQtty = newQtty;
+            localStorage.setItem("article", JSON.stringify(productStorage));
+            console.table(productStorage);
+            alert("Ce produit est déja dans votre panier, la quantité a été ajoutée");
 
+
+          }
+        }
+      }
 //Condition 3 : Ajout d'un nouvel article (id différente et même id mais couleur différente)
 for(i = 0 ; i < productStorage.length ; i++){
   if (productStorage [i].itemId == idProduct &&
@@ -145,6 +150,7 @@ for(i = 0 ; i < productStorage.length ; i++){
         localStorage.setItem("article", JSON.stringify(productStorage)),
         productStorage = JSON.parse(localStorage.getItem("article")),
         alert("Votre nouveau produit a été ajouté au panier")
+
       )
   };
 }

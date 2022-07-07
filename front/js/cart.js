@@ -2,7 +2,7 @@
 
 //Initialisation du local storage
 let productStorage = JSON.parse (localStorage.getItem("article"));
-console.table(productStorage);
+console.log(productStorage);
 
 //Gestion du panier
 function getCart() {
@@ -84,7 +84,11 @@ function getCart() {
             productQuantity.setAttribute("min", "1");
             productQuantity.setAttribute("max", "100");
             productQuantity.setAttribute("name", "itemQuantity");
-            productQuantity.setAttribute("onchange", "modifyQtt(event," + article + ")");
+           productQuantity.setAttribute("onchange", "modifyQtt(event," + article + ")");
+           
+           
+           
+
 
             // Insertion de l'élément "div"
             let productItemContentSettingsDelete = document.createElement("div");
@@ -145,6 +149,10 @@ function modifyQtt(event, article) {
     event.stopPropagation();
     event.preventDefault();
 }
+
+
+
+
 
 // Suppression d'un produit
 function deleteProduct() {
