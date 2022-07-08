@@ -397,7 +397,7 @@ btnSubmit.addEventListener("click", function(e) {
                 window.location.href = `confirmation.html?id=${data.orderId}`;
                 console.log(data);
                 localStorage.clear();
-                alert("Merci d'avoir fait vos achats chez nous")
+                alert("Merci d'avoir fait vos achats chez nous.")
             } catch (e) {
             }
         });
