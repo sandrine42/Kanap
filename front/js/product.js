@@ -103,12 +103,13 @@ let productItems =  {
   itemDescription: `${article.description}`
 
 };
-/*console.log(productItems);*/
+console.log(productItems);
 
 //Ajout des article dans le panier au clic sur le bouton
 
-if (quantity.value >= 0 && quantity.value <=100 && quantity.value != 0 && color.value != 0 ) {
 
+
+if (quantity.value >= 0 && quantity.value <=100 && quantity.value != 0 && color.value != 0 ) {
 //Condition 1 : Aucun article dans le panier, ajout du 1er article
 if (productStorage == null){
 //stockage des données
@@ -116,46 +117,40 @@ productStorage = [];
 productStorage.push(productItems);
 localStorage.setItem("article", JSON.stringify(productStorage));
 alert("Votre produit a été ajouté au panier");
-console.log("ok condition 1")
-
-//Condition 2 : Article déjà présent dans le panier (même Id, même couleur), incrémentation de la quantité au clic sur le bouton
-
+console.log("ok condition 1");
 }else if (productStorage != null){
-for(i = 0 ; i < productStorage.length ; i++){
+//Condition 2 : Article déjà présent dans le panier (même Id, même couleur), incrémentation de la quantité au clic sur le bouton
+    const newTotalQtty = productStorage.find(
+        (el) => el.itemId === idProduct && el.itemColorSelect === color.value);
+        if (newTotalQtty) {
+            let newQtty =
+            parseInt(productItems.itemQtty) + parseInt(newTotalQtty.itemQtty);
+            newTotalQtty.itemQtty = newQtty;
+            localStorage.setItem("article", JSON.stringify(productStorage));
+            console.table(productStorage);
+            alert("Ce produit est déja dans votre panier, la quantité a été ajoutée");
+        }else{
+//Condition 3 : Ajout d'un nouvel article (id différente)
 
-if (productStorage [i].itemId == idProduct &&
-  productStorage [i].itemColorSelect == color.value){ 
-  return  (
-    console.log("ok condition 2"),
-productStorage[i].itemQtty++,
-localStorage.setItem("article", JSON.stringify(productStorage)),
-productStorage = JSON.parse(localStorage.getItem("article"))),
-alert("Ce produit est déja dans votre panier, la quantité a été ajoutée")
-};
-}
-
-//Condition 3 : Ajout d'un nouvel article (id différente et même id mais couleur différente)
-for(i = 0 ; i < productStorage.length ; i++){
-  if (productStorage [i].itemId == idProduct &&
-      productStorage [i].itemColorSelect != color.value ||
-      productStorage [i].itemId != idProduct){
-      return (
+        return (
         console.log("ok condition 3"),
         productStorage.push(productItems),
         localStorage.setItem("article", JSON.stringify(productStorage)),
         productStorage = JSON.parse(localStorage.getItem("article")),
         alert("Votre nouveau produit a été ajouté au panier")
       )
-  };
-}
-}
+    }
+  }
 //Condition 4 : couleur et/ou quantité non séléctionnées
 }else{
     alert ("Veuillez selectionner une couleur et une quantitée"),
     console.log("ok condition 4")
+    return (
+      productStorage = JSON.parse(localStorage.getItem("article"))
+      );
 };
+
 });
-return (
-  productStorage = JSON.parse(localStorage.getItem("article"))
-  );
+
 }
+

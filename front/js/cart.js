@@ -2,7 +2,7 @@
 
 //Initialisation du local storage
 let productStorage = JSON.parse (localStorage.getItem("article"));
-console.table(productStorage);
+console.log(productStorage);
 
 //Gestion du panier
 function getCart() {
@@ -85,7 +85,7 @@ function getCart() {
             productQuantity.setAttribute("max", "100");
             productQuantity.setAttribute("name", "itemQuantity");
             productQuantity.setAttribute("onchange", "modifyQtt(event," + article + ")");
-
+           
             // Insertion de l'élément "div"
             let productItemContentSettingsDelete = document.createElement("div");
             productItemContentSettings.appendChild(productItemContentSettingsDelete);
@@ -139,11 +139,12 @@ function modifyQtt(event, article) {
     console.log(productStorage[article]);
     productStorage[article].itemQtty = event.target.value;
     localStorage.setItem("article", JSON.stringify(productStorage));
-
+    alert("La quantité demandée pour cet article a bien été prise en compte");
     // refresh rapide
     location.reload();
     event.stopPropagation();
     event.preventDefault();
+
 }
 
 // Suppression d'un produit
@@ -163,7 +164,7 @@ function deleteProduct() {
             localStorage.setItem("article", JSON.stringify(productStorage));
 
             //Alerte produit supprimé et refresh
-            alert("Ce produit a bien été supprimé du panier");
+            alert("Ce produit a bien été supprimé de votre panier");
             location.reload();
         })
     }
@@ -315,7 +316,7 @@ city.addEventListener("input", function(e){
     }
     
     if(!e.target.value.match(cityRegExp) && e.target.value.length > 3){
-        cityErrorMsg.innerHTML = "Veuillez entrer uniquement des lettres";
+        cityErrorMsg.innerHTML = "Veuillez entrer uniquement des lettres, le tiret (-) est accepté";
         valueCity = null;
 
     }
@@ -396,6 +397,7 @@ btnSubmit.addEventListener("click", function(e) {
                 window.location.href = `confirmation.html?id=${data.orderId}`;
                 console.log(data);
                 localStorage.clear();
+                alert("Merci d'avoir fait vos achats chez nous")
             } catch (e) {
             }
         });
