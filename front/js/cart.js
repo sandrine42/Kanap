@@ -1,28 +1,31 @@
 ////////Affichage du contenu du panier dans la page via le localStorage////////
 
 //Initialisation du local storage
-let productStorage = JSON.parse (localStorage.getItem("article"));
+let productStorage = JSON.parse(localStorage.getItem("article"));
 console.log(productStorage);
 
 //Gestion du panier
 function getCart() {
-/**Si le panier est vide
- * Pas de produit dans le localStorage, formulaire "caché" et h1 différent
- * Sinon produit dans le localStorage, création de la fiche produit
- **/
+    /**Si le panier est vide
+     * Pas de produit dans le localStorage, formulaire "caché" et h1 différent
+     * Sinon produit dans le localStorage, création de la fiche produit
+     **/
     if ((productStorage === null)) {
         const titleCart = document.querySelector("h1");
         const sectionCart = document.querySelector(".cart");
         titleCart.innerHTML = "Votre panier est vide !";
         sectionCart.style.display = "none";
     } else {
+        let produitSection = document.getElementById("cart__items");
+        //methode 2
+        produitSection.addEventListener('change', modifyQtt2);
         for (let article in productStorage) {
             // Insertion de l'élément "article"
             let productArticle = document.createElement("article");
-            document.querySelector("#cart__items").appendChild(productArticle);
+            produitSection.appendChild(productArticle);
             productArticle.className = "cart__item";
-            productArticle.setAttribute('data-id', productStorage[article].itemId);
-
+            //productArticle.setAttribute('data-id', productStorage[article].itemId);
+            productArticle.dataset.id = productStorage[article].itemId;
             // Insertion de l'élément "div"
             let productDivImg = document.createElement("div");
             productArticle.appendChild(productDivImg);
@@ -84,8 +87,8 @@ function getCart() {
             productQuantity.setAttribute("min", "1");
             productQuantity.setAttribute("max", "100");
             productQuantity.setAttribute("name", "itemQuantity");
-            productQuantity.setAttribute("onchange", "modifyQtt(event," + article + ")");
-           
+            // methode 1: productQuantity.setAttribute("onchange", "modifyQtt(event," + article + ")");
+
             // Insertion de l'élément "div"
             let productItemContentSettingsDelete = document.createElement("div");
             productItemContentSettings.appendChild(productItemContentSettingsDelete);
@@ -103,14 +106,14 @@ function getCart() {
 getCart();
 
 // Total des quantités et du prix
-function getTotals(){
+function getTotals() {
 
     // Récupération du total des quantités
     let allQtty = document.getElementsByClassName('itemQuantity');
     let allQttyLength = allQtty.length,
-    totalQty = 0;
+        totalQty = 0;
 
-    for (let i = 0; i <allQttyLength; ++i) {
+    for (let i = 0; i < allQttyLength; ++i) {
         totalQty += allQtty[i].valueAsNumber;
     }
 
@@ -147,20 +150,36 @@ function modifyQtt(event, article) {
 
 }
 
+// Modification d'une quantité de produit
+function modifyQtt2(event) {
+    console.log(event);
+    articleElement = event.target.closest('.cart__item');
+    productId = articleElement.dataset.id;
+    article = productStorage.findIndex(produit => produit.itemId == productId);
+    productStorage[article].itemQtty = event.target.value;
+    localStorage.setItem("article", JSON.stringify(productStorage));
+    alert("La quantité demandée pour cet article a bien été prise en compte");
+    // refresh rapide
+    location.reload();
+    event.stopPropagation();
+    event.preventDefault();
+
+}
+
 // Suppression d'un produit
 function deleteProduct() {
     let btn_supprimer = document.querySelectorAll(".deleteItem");
 
-    for (let j = 0; j < btn_supprimer.length; j++){
-        btn_supprimer[j].addEventListener("click" , (event) => {
+    for (let j = 0; j < btn_supprimer.length; j++) {
+        btn_supprimer[j].addEventListener("click", (event) => {
             event.preventDefault();
 
             //Selection de l'element à supprimer en fonction de son id ET sa couleur
             let idDelete = productStorage[j].itemId;
             let colorDelete = productStorage[j].itemColorSelect;
 
-            productStorage = productStorage.filter( el => el.itemId !== idDelete || el.itemColorSelect !== colorDelete );
-            
+            productStorage = productStorage.filter(el => el.itemId !== idDelete || el.itemColorSelect !== colorDelete);
+
             localStorage.setItem("article", JSON.stringify(productStorage));
 
             //Alerte produit supprimé et refresh
@@ -177,17 +196,17 @@ deleteProduct();
 // Validation formulaire
 let form = document.querySelector(".cart__order__form");
 // Récupération des données du formulaire de l'objet form
-form ={
-firstName : document.querySelector("#firstName"),
-lastName : document.querySelector("#lastName"),
-address : document.querySelector("#address"),
-city : document.querySelector("#city"),
-email : document.querySelector("#email")
+form = {
+    firstName: document.querySelector("#firstName"),
+    lastName: document.querySelector("#lastName"),
+    address: document.querySelector("#address"),
+    city: document.querySelector("#city"),
+    email: document.querySelector("#email")
 }
 
-let valueFirstName, valueLastName, valueAddress, valueCity, valueEmail; 
+let valueFirstName, valueLastName, valueAddress, valueCity, valueEmail;
 
- // Création et ajout des Regex
+// Création et ajout des Regex
 let emailRegExp = new RegExp((/^[a-zA-Z0-9_. -]+@[a-zA-Z.-]+[.]{1}[a-z]{2,10}$/i));
 let firstAndLastNameRegExp = new RegExp(/^[A-zÀ-ú \-]{3,}$|^$/i);
 let addressRegExp = new RegExp(/^[A-zÀ-ú0-9 ,.'\-]{3,}$|^$/i);
@@ -200,30 +219,30 @@ let cityRegExp = new RegExp(/^[A-zÀ-ú \-]{3,}$|^$/i);
  * Champ en fonction de sa regex si le modèle est respecté
  * Champ en fonction de sa regex si le modèle n'est pas respecté et plus de 3 caractéres
 **/
-firstName.addEventListener("input", function(e){
+firstName.addEventListener("input", function (e) {
     valueFirstName;
-    if(e.target.value.length == 0){
+    if (e.target.value.length == 0) {
         console.log(e.target.value.length);
         firstNameErrorMsg.innerHTML = "";
         valueFirstName = null;
-    }else if (e.target.value.length < 3){
+    } else if (e.target.value.length < 3) {
         firstNameErrorMsg.innerHTML = "Votre prénom doit être composé de 3 caractères minimum";
         valueFirstName = null;
         console.log(valueFirstName);
     }
 
-    if(e.target.value.match(firstAndLastNameRegExp)){
+    if (e.target.value.match(firstAndLastNameRegExp)) {
         firstNameErrorMsg.innerHTML = "";
         valueFirstName = e.target.value;
         console.log(valueFirstName);
     }
-    
-    if(!e.target.value.match(firstAndLastNameRegExp) && e.target.value.length > 3){
+
+    if (!e.target.value.match(firstAndLastNameRegExp) && e.target.value.length > 3) {
         firstNameErrorMsg.innerHTML = "Veuillez entrer uniquement des lettres, le tiret (-) est accepté";
         valueFirstName = null;
         console.log(valueFirstName);
     }
-   
+
 });
 
 /** Validation lastName en fonction de :
@@ -232,30 +251,30 @@ firstName.addEventListener("input", function(e){
  * Champ en fonction de sa regex si le modèle est respecté
  * Champ en fonction de sa regex si le modèle n'est pas respecté et plus de 3 caractéres
 **/
-lastName.addEventListener("input", function(e){
+lastName.addEventListener("input", function (e) {
     valueLastName;
-    if(e.target.value.length == 0){
+    if (e.target.value.length == 0) {
         console.log(e.target.value.length);
         lastNameErrorMsg.innerHTML = "";
         valueLastName = null;
-    }else if (e.target.value.length < 3){
+    } else if (e.target.value.length < 3) {
         lastNameErrorMsg.innerHTML = "Votre nom doit être composé de 3 caractères minimum";
         valueLastName = null;
         console.log(valueLastName);
     }
 
-    if(e.target.value.match(firstAndLastNameRegExp)){
+    if (e.target.value.match(firstAndLastNameRegExp)) {
         lastNameErrorMsg.innerHTML = "";
         valueLastName = e.target.value;
         console.log(valueLastName);
     }
-    
-    if(!e.target.value.match(firstAndLastNameRegExp) && e.target.value.length > 3){
+
+    if (!e.target.value.match(firstAndLastNameRegExp) && e.target.value.length > 3) {
         lastNameErrorMsg.innerHTML = "Veuillez entrer uniquement des lettres, le tiret (-) est accepté";
         valueLastName = null;
 
     }
-   
+
 });
 
 /** Validation address en fonction de :
@@ -264,31 +283,31 @@ lastName.addEventListener("input", function(e){
  * Champ en fonction de sa regex si le modèle est respecté
  * Champ en fonction de sa regex si le modèle n'est pas respecté et plus de 3 caractéres
 **/
-address.addEventListener("input", function(e){
+address.addEventListener("input", function (e) {
     valueAddress;
-    if(e.target.value.length == 0){
+    if (e.target.value.length == 0) {
         console.log(e.target.value.length);
         addressErrorMsg.innerHTML = "";
         valueAddress = null;
-    }else if (e.target.value.length < 3){
+    } else if (e.target.value.length < 3) {
         addressErrorMsg.innerHTML = "Votre adresse doit être composé de 3 caractères minimum";
         valueAddress = null;
         console.log(valueAddress);
     }
 
-    if(e.target.value.match(addressRegExp)){
+    if (e.target.value.match(addressRegExp)) {
         addressErrorMsg.innerHTML = "";
         valueAddress = e.target.value;
         console.log(valueAddress);
     }
-    
-    if(!e.target.value.match(addressRegExp) && e.target.value.length > 3){
+
+    if (!e.target.value.match(addressRegExp) && e.target.value.length > 3) {
         addressErrorMsg.innerHTML = "Veuillez entrer uniquement des lettres et des chiffres, le tiret (-), le point (.) et la virgule (,) sont acceptés";
         valueAddress = null;
         console.log(valueAddress);
 
     }
-   
+
 });
 
 /** Validation city en fonction de :
@@ -297,30 +316,30 @@ address.addEventListener("input", function(e){
  * Champ en fonction de sa regex si le modèle est respecté
  * Champ en fonction de sa regex si le modèle n'est pas respecté et plus de 3 caractéres
 **/
-city.addEventListener("input", function(e){
+city.addEventListener("input", function (e) {
     valueCity;
-    if(e.target.value.length == 0){
+    if (e.target.value.length == 0) {
         console.log(e.target.value.length);
         cityErrorMsg.innerHTML = "";
         valueCity = null;
-    }else if (e.target.value.length < 3){
+    } else if (e.target.value.length < 3) {
         cityErrorMsg.innerHTML = "le nom de ville doit être composé de 3 caractères minimum";
         valueCity = null;
         console.log(valueCity);
     }
 
-    if(e.target.value.match(cityRegExp)){
+    if (e.target.value.match(cityRegExp)) {
         cityErrorMsg.innerHTML = "";
         valueCity = e.target.value;
         console.log(valueCity);
     }
-    
-    if(!e.target.value.match(cityRegExp) && e.target.value.length > 3){
+
+    if (!e.target.value.match(cityRegExp) && e.target.value.length > 3) {
         cityErrorMsg.innerHTML = "Veuillez entrer uniquement des lettres, le tiret (-) est accepté";
         valueCity = null;
 
     }
-   
+
 });
 
 /** Validation email en fonction de :
@@ -328,23 +347,23 @@ city.addEventListener("input", function(e){
  * Champ en fonction de sa regex si le modèle est respecté
  * Champ en fonction de sa regex si le modèle n'est pas respecté et plus de 3 caractéres
 **/
-email.addEventListener("input", function(e){
+email.addEventListener("input", function (e) {
     valueEmail;
-    if(e.target.value.length == 0){
+    if (e.target.value.length == 0) {
         console.log(e.target.value.length);
         emailErrorMsg.innerHTML = "";
         valueEmail = null;
         console.log(valueEmail);
-    }else if (e.target.value.match(emailRegExp)){
+    } else if (e.target.value.match(emailRegExp)) {
         emailErrorMsg.innerHTML = "";
-        valueEmail =e.target.value;
+        valueEmail = e.target.value;
         console.log(valueEmail)
     }
-    if(!e.target.value.match(emailRegExp) && !e.target.value.length == 0){
-    emailErrorMsg.innerHTML = "Votre email n'est pas valide, exemple d'email valide : prenom.nom@gmail.com";
-    valueEmail = null;
-    console.log(valueEmail);
-}
+    if (!e.target.value.match(emailRegExp) && !e.target.value.length == 0) {
+        emailErrorMsg.innerHTML = "Votre email n'est pas valide, exemple d'email valide : prenom.nom@gmail.com";
+        valueEmail = null;
+        console.log(valueEmail);
+    }
 });
 
 
@@ -356,28 +375,28 @@ console.log(getId);
 
 // Validation du formulaire au moment du clic sur le bouton de commande via l'API de validation HTML 5
 //Si toutes les conditions sont remplies
-const btnSubmit = document.querySelector ("#order")
-btnSubmit.addEventListener("click", function(e) {
+const btnSubmit = document.querySelector("#order")
+btnSubmit.addEventListener("click", function (e) {
     e.preventDefault();
     let valid = true;
     console.log(valid);
 
-    for(let input of document.querySelectorAll(".cart__order__form__question input")) {
-    valid &= input.reportValidity();
+    for (let input of document.querySelectorAll(".cart__order__form__question input")) {
+        valid &= input.reportValidity();
         if (!valid) {
             break;
-        } 
-    }  
-//  Fetch des données contact vers /order avec une requête POST
+        }
+    }
+    //  Fetch des données contact vers /order avec une requête POST
     if (valid) {
         const result = fetch("http://localhost:3000/api/products/order", {
             method: "POST",
             headers: {
-                'Accept': 'application/json', 
+                'Accept': 'application/json',
                 'Content-Type': 'application/json'
-               
+
             },
-//  Informations client et ID du produit envoyées avec la requête POST dans le serveur
+            //  Informations client et ID du produit envoyées avec la requête POST dans le serveur
             body: JSON.stringify({
                 contact: {
                     firstName: document.getElementById("firstName").value,
@@ -385,12 +404,12 @@ btnSubmit.addEventListener("click", function(e) {
                     address: document.getElementById("address").value,
                     city: document.getElementById("city").value,
                     email: document.getElementById("email").value
-                    },
-                products : getId
+                },
+                products: getId
             })
         });
         console.log(result);
-//Redirection vers la page de confirmation et localStorage "nettoyer"
+        //Redirection vers la page de confirmation et localStorage "nettoyer"
         result.then(async (answer) => {
             try {
                 const data = await answer.json();
